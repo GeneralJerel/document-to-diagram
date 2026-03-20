@@ -2,7 +2,7 @@
 
 https://github.com/user-attachments/assets/5b16421d-e921-4ca4-ba0c-6d477ab4e0eb
 
-Powered by [Open Generative UI](https://github.com/CopilotKit/OpenGenerativeUI)
+Powered by  [CopilotKit](https://github.com/CopilotKit/CopilotKit) and [Open Generative UI](https://github.com/CopilotKit/OpenGenerativeUI)
 
 An AI-powered document editor that transforms written content into interactive diagrams, timelines, and visualizations. Write or edit documents with real-time predictive state updates, then ask the agent to generate rich visual explanations — all rendered inline in the chat sidebar.
 
