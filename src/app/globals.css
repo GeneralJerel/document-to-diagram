@@ -1,6 +1,390 @@
 @import "tailwindcss";
 
-/* TipTap editor styles */
+/* ─── Brand Design Tokens ─────────────────────────────────────────── */
+:root {
+  /* Brand */
+  --color-lilac: #BEC2FF;
+  --color-lilac-light: #D4D7FF;
+  --color-lilac-dark: #9599CC;
+  --color-mint: #85E0CE;
+  --color-mint-light: #A8E9DC;
+  --color-mint-dark: #1B936F;
+
+  /* Background & Surface */
+  --color-background: #F7F7F9;
+  --color-foreground: #010507;
+  --color-surface: #DEDEE9;
+  --color-surface-light: #F7F7F9;
+  --color-container: #FFFFFF;
+  --surface-primary: #fff;
+  --surface-secondary: #fafafa;
+  --surface-tertiary: #f9fafb;
+  --surface-quaternary: #f3f4f6;
+  --surface-button: #fff;
+  --surface-button-hover: #f9fafb;
+  --surface-dialog: #fff;
+
+  /* Text */
+  --color-text-primary: #374151;
+  --color-text-secondary: #6b7280;
+  --color-text-tertiary: #9ca3af;
+
+  /* Border */
+  --color-border-default: #e5e7eb;
+  --color-border-light: #f3f4f6;
+  --color-border-glass: rgba(255,255,255,0.3);
+  --color-border-subtle: #f0f0f0;
+
+  /* Glassmorphism */
+  --glass: rgba(255,255,255,0.7);
+  --glass-subtle: rgba(255,255,255,0.5);
+  --glass-dark: rgba(255,255,255,0.85);
+
+  /* Accent / Glow */
+  --accent-indigo: #9599CC;
+  --accent-blue: #BEC2FF;
+  --accent-emerald: #85E0CE;
+  --glow-lilac: 0 0 20px rgba(190,194,255,0.3);
+  --glow-mint: 0 0 20px rgba(133,224,206,0.3);
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.07), 0 2px 4px -1px rgba(0,0,0,0.04);
+  --shadow-lg: 0 10px 25px -3px rgba(0,0,0,0.08), 0 4px 6px -2px rgba(0,0,0,0.03);
+  --shadow-glass: 0 4px 30px rgba(0,0,0,0.1);
+  --shadow-card: 0 1px 3px rgba(0,0,0,0.08), 0 4px 12px rgba(0,0,0,0.04);
+  --shadow-card-hover: 0 2px 6px rgba(0,0,0,0.08), 0 4px 16px rgba(0,0,0,0.04);
+
+  /* Typography */
+  --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --font-mono: 'SF Mono', 'Fira Code', 'Fira Mono', monospace;
+
+  /* Radius */
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 24px;
+  --radius-pill: 999px;
+}
+
+/* ─── Dark Mode ───────────────────────────────────────────────────── */
+.dark {
+  --color-background: #0a0a0a;
+  --color-foreground: #ededed;
+  --color-surface: #1a1a2e;
+  --color-surface-light: #0f0f1a;
+  --color-container: #1a1a2e;
+  --surface-primary: rgba(255,255,255,0.04);
+  --surface-secondary: rgba(255,255,255,0.02);
+  --surface-tertiary: rgba(255,255,255,0.06);
+  --surface-quaternary: rgba(255,255,255,0.05);
+  --surface-button: rgba(255,255,255,0.06);
+  --surface-button-hover: rgba(255,255,255,0.1);
+  --surface-dialog: rgba(30,30,50,0.9);
+
+  --color-text-primary: #e5e7eb;
+  --color-text-secondary: #9ca3af;
+  --color-text-tertiary: #6b7280;
+
+  --color-border-default: rgba(255,255,255,0.1);
+  --color-border-light: rgba(255,255,255,0.06);
+  --color-border-glass: rgba(255,255,255,0.08);
+
+  --glass: rgba(20,20,40,0.7);
+  --glass-subtle: rgba(20,20,40,0.5);
+  --glass-dark: rgba(10,10,20,0.85);
+
+  --glow-lilac: 0 0 20px rgba(190,194,255,0.15);
+  --glow-mint: 0 0 20px rgba(133,224,206,0.15);
+
+  --shadow-sm: none;
+  --shadow-md: none;
+  --shadow-lg: none;
+  --shadow-glass: 0 4px 30px rgba(0,0,0,0.3);
+  --shadow-card: none;
+  --shadow-card-hover: none;
+}
+
+@media (prefers-color-scheme: dark) {
+  html:not(.light) {
+    --color-background: #0a0a0a;
+    --color-foreground: #ededed;
+    --color-surface: #1a1a2e;
+    --color-surface-light: #0f0f1a;
+    --color-container: #1a1a2e;
+    --surface-primary: rgba(255,255,255,0.04);
+    --surface-secondary: rgba(255,255,255,0.02);
+    --surface-tertiary: rgba(255,255,255,0.06);
+    --surface-quaternary: rgba(255,255,255,0.05);
+    --surface-button: rgba(255,255,255,0.06);
+    --surface-button-hover: rgba(255,255,255,0.1);
+    --surface-dialog: rgba(30,30,50,0.9);
+
+    --color-text-primary: #e5e7eb;
+    --color-text-secondary: #9ca3af;
+    --color-text-tertiary: #6b7280;
+
+    --color-border-default: rgba(255,255,255,0.1);
+    --color-border-light: rgba(255,255,255,0.06);
+    --color-border-glass: rgba(255,255,255,0.08);
+
+    --glass: rgba(20,20,40,0.7);
+    --glass-subtle: rgba(20,20,40,0.5);
+    --glass-dark: rgba(10,10,20,0.85);
+
+    --glow-lilac: 0 0 20px rgba(190,194,255,0.15);
+    --glow-mint: 0 0 20px rgba(133,224,206,0.15);
+
+    --shadow-sm: none;
+    --shadow-md: none;
+    --shadow-lg: none;
+    --shadow-glass: 0 4px 30px rgba(0,0,0,0.3);
+    --shadow-card: none;
+    --shadow-card-hover: none;
+  }
+}
+
+/* ─── Base ────────────────────────────────────────────────────────── */
+html {
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background: var(--color-background);
+  color: var(--color-text-primary);
+  min-height: 100vh;
+}
+
+/* ─── Brand Shell ─────────────────────────────────────────────────── */
+.brand-shell {
+  position: relative;
+  min-height: 100vh;
+  padding: 16px;
+  overflow: hidden;
+}
+
+@media (max-width: 640px) {
+  .brand-shell { padding: 8px; }
+}
+
+/* ─── Animated Background Blobs ───────────────────────────────────── */
+.brand-shell::before,
+.blob-2,
+.blob-3 {
+  content: '';
+  position: fixed;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.5;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.brand-shell::before {
+  width: 500px;
+  height: 500px;
+  top: -10%;
+  left: -5%;
+  background: var(--color-lilac);
+  animation: blob1 25s ease-in-out infinite;
+}
+
+.blob-2 {
+  position: fixed;
+  width: 600px;
+  height: 600px;
+  bottom: -15%;
+  right: -10%;
+  background: var(--color-mint);
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.4;
+  pointer-events: none;
+  z-index: 0;
+  animation: blob2 30s ease-in-out infinite;
+}
+
+.blob-3 {
+  position: fixed;
+  width: 400px;
+  height: 400px;
+  top: 40%;
+  left: 40%;
+  background: var(--color-lilac-light);
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.3;
+  pointer-events: none;
+  z-index: 0;
+  animation: blob3 35s ease-in-out infinite;
+}
+
+@media (max-width: 640px) {
+  .brand-shell::before,
+  .blob-2,
+  .blob-3 {
+    filter: blur(60px);
+    transform: scale(0.6);
+  }
+}
+
+@keyframes blob1 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(30px, -20px) scale(1.05); }
+  66% { transform: translate(-20px, 20px) scale(0.95); }
+}
+
+@keyframes blob2 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  33% { transform: translate(-40px, 30px) scale(1.08); }
+  66% { transform: translate(30px, -40px) scale(0.92); }
+}
+
+@keyframes blob3 {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(20px, -15px) scale(1.1); }
+}
+
+/* ─── Glass Container ─────────────────────────────────────────────── */
+.glass-container {
+  position: relative;
+  z-index: 1;
+  background: var(--glass);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--color-border-glass);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-glass);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 32px);
+}
+
+@media (max-width: 640px) {
+  .glass-container { height: calc(100vh - 16px); }
+}
+
+/* ─── CTA Banner ──────────────────────────────────────────────────── */
+.cta-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 24px;
+  background: var(--surface-primary);
+  border-bottom: 1px solid var(--color-border-light);
+  flex-shrink: 0;
+}
+
+.cta-banner-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.cta-banner-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cta-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  padding: 7px 18px;
+  background: linear-gradient(135deg, var(--color-lilac-dark), var(--color-mint-dark));
+  color: #fff;
+  border-radius: var(--radius-pill);
+  font-size: 12px;
+  font-weight: 600;
+  text-decoration: none;
+  box-shadow: 0 1px 4px rgba(149,153,204,0.3);
+  transition: all 180ms ease;
+}
+
+.cta-btn-primary:hover {
+  box-shadow: 0 2px 10px rgba(149,153,204,0.45);
+  transform: translateY(-1px);
+  text-decoration: none;
+}
+
+.cta-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  padding: 7px 18px;
+  background: transparent;
+  color: var(--color-text-secondary);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-pill);
+  font-size: 12px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all 180ms ease;
+}
+
+.cta-btn-secondary:hover {
+  background: var(--surface-tertiary);
+  color: var(--color-text-primary);
+  text-decoration: none;
+}
+
+/* ─── Main Content Area ───────────────────────────────────────────── */
+.main-content {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+
+/* ─── Editor Pane ─────────────────────────────────────────────────── */
+.editor-pane {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  background: var(--surface-primary);
+  position: relative;
+  overflow-y: auto;
+}
+
+/* ─── Glass Card ──────────────────────────────────────────────────── */
+.glass-card {
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--color-border-glass);
+  border-radius: var(--radius-xl);
+  padding: 24px;
+}
+
+
+/* ─── Animations ──────────────────────────────────────────────────── */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes fadeSlideIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ─── TipTap Editor Styles ────────────────────────────────────────── */
 .tiptap :first-child {
   margin-top: 0;
 }
@@ -28,10 +412,13 @@
   margin-bottom: 1.5rem;
   text-wrap: pretty;
   font-weight: bold;
+  color: var(--color-text-primary);
+  letter-spacing: -0.02em;
 }
 
 .tiptap p {
   margin-bottom: 1rem;
+  color: var(--color-text-primary);
 }
 
 .tiptap h1 {
@@ -53,17 +440,18 @@
 }
 
 .tiptap code {
-  background-color: #f3f0ff;
+  background-color: var(--surface-quaternary);
   border-radius: 0.4rem;
   font-size: 0.85rem;
+  font-family: var(--font-mono);
   padding: 0.25em 0.3em;
 }
 
 .tiptap pre {
   background: #1e1e1e;
-  border-radius: 0.5rem;
+  border-radius: var(--radius-lg);
   color: #fff;
-  font-family: "JetBrainsMono", monospace;
+  font-family: var(--font-mono);
   margin: 1.5rem 0;
   padding: 0.75rem 1rem;
 }
@@ -76,14 +464,15 @@
 }
 
 .tiptap blockquote {
-  border-left: 3px solid #d1d5db;
+  border-left: 3px solid var(--color-border-default);
   margin: 1.5rem 0;
   padding-left: 1rem;
+  color: var(--color-text-secondary);
 }
 
 .tiptap hr {
   border: none;
-  border-top: 1px solid #e5e7eb;
+  border-top: 1px solid var(--color-border-default);
   margin: 2rem 0;
 }
 
@@ -102,6 +491,11 @@
   font-style: normal;
 }
 
+/* ─── CopilotKit Sidebar Overrides ────────────────────────────────── */
 .copilotKitWindow {
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  box-shadow: none;
+  border-left: 1px solid var(--color-border-default);
+  background: var(--glass-dark);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }

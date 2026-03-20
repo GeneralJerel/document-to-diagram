@@ -445,6 +445,7 @@ function CloseIcon() {
 // ─── Modal Component ────────────────────────────────────────────────
 function WidgetModal({ title, description, html, onClose }: WidgetRendererProps & { onClose: () => void }) {
   const iframeRef = useRef<HTMLIFrameElement>(null);
+  const [contentHeight, setContentHeight] = useState(400);
 
   useEffect(() => {
     if (html && iframeRef.current) {
@@ -463,6 +464,12 @@ function WidgetModal({ title, description, html, onClose }: WidgetRendererProps 
   useEffect(() => {
     const handler = (e: MessageEvent) => {
       if (!iframeRef.current || e.source !== iframeRef.current.contentWindow) return;
+      if (e.data?.type === "widget-resize" && typeof e.data.height === "number") {
+        setContentHeight((prev) => {
+          const next = Math.max(100, Math.min(e.data.height + 8, 4000));
+          return next === prev ? prev : next;
+        });
+      }
       if (e.data?.type === "open-link" && typeof e.data.url === "string") {
         window.open(e.data.url, "_blank", "noopener,noreferrer");
       }
@@ -474,23 +481,62 @@ function WidgetModal({ title, description, html, onClose }: WidgetRendererProps 
   return createPortal(
     <div
       className="fixed inset-0 z-[9999] flex items-center justify-center"
-      style={{ background: "rgba(0,0,0,0.6)", backdropFilter: "blur(4px)" }}
+      style={{ background: "rgba(0,0,0,0.5)", backdropFilter: "blur(8px)" }}
       onClick={onClose}
     >
       <div
-        className="relative bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col"
-        style={{ width: "90vw", maxWidth: 1000, height: "85vh" }}
+        className="relative overflow-hidden flex flex-col"
+        style={{
+          width: "90vw",
+          maxWidth: 1000,
+          maxHeight: "85vh",
+          background: "var(--surface-dialog)",
+          borderRadius: "var(--radius-xl)",
+          border: "1px solid var(--color-border-glass)",
+          boxShadow: "var(--shadow-glass)",
+          backdropFilter: "blur(16px)",
+          WebkitBackdropFilter: "blur(16px)",
+        }}
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-3 border-b border-gray-200 shrink-0">
+        <div
+          className="flex items-center justify-between px-5 py-3 shrink-0"
+          style={{ borderBottom: "1px solid var(--color-border-default)" }}
+        >
           <div className="min-w-0">
-            <h3 className="text-sm font-semibold text-gray-900 truncate">{title}</h3>
-            <p className="text-xs text-gray-500 truncate">{description}</p>
+            <h3
+              className="text-sm font-semibold truncate"
+              style={{ color: "var(--color-text-primary)" }}
+            >
+              {title}
+            </h3>
+            <p
+              className="text-xs truncate"
+              style={{ color: "var(--color-text-secondary)" }}
+            >
+              {description}
+            </p>
           </div>
           <button
             onClick={onClose}
-            className="ml-3 p-1.5 rounded-lg text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors shrink-0"
+            className="ml-3 p-1.5 shrink-0"
+            style={{
+              borderRadius: "var(--radius-md)",
+              color: "var(--color-text-tertiary)",
+              transition: "all 180ms ease",
+              border: "none",
+              background: "transparent",
+              cursor: "pointer",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.color = "var(--color-text-primary)";
+              e.currentTarget.style.background = "var(--surface-quaternary)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.color = "var(--color-text-tertiary)";
+              e.currentTarget.style.background = "transparent";
+            }}
           >
             <CloseIcon />
           </button>
@@ -499,8 +545,12 @@ function WidgetModal({ title, description, html, onClose }: WidgetRendererProps 
         <iframe
           ref={iframeRef}
           sandbox="allow-scripts allow-same-origin"
-          className="w-full flex-1 border-0"
-          style={{ background: "transparent" }}
+          className="w-full border-0"
+          style={{
+            height: contentHeight,
+            background: "transparent",
+            transition: "height 200ms ease",
+          }}
           title={title}
         />
       </div>
@@ -559,17 +609,36 @@ export function WidgetRenderer({ title, description, html }: WidgetRendererProps
   return (
     <div className="w-full my-3">
       {showLoading && (
-        <div className="overflow-hidden rounded-xl border border-gray-200">
+        <div
+          className="overflow-hidden"
+          style={{
+            borderRadius: "var(--radius-lg)",
+            border: "1px solid var(--color-border-default)",
+            background: "var(--surface-primary)",
+          }}
+        >
           <div
-            className="h-0.5 animate-pulse"
+            className="h-0.5"
             style={{
-              background: "linear-gradient(90deg, #6366f1, #10b981, #6366f1)",
+              background: "linear-gradient(90deg, var(--color-lilac-dark), var(--color-mint), var(--color-lilac-dark))",
               backgroundSize: "200% 100%",
+              animation: "shimmer 1.5s ease-in-out infinite",
             }}
           />
           <div className="flex items-center gap-3 px-4 py-3">
-            <div className="w-4 h-4 rounded-full border-2 border-gray-300 border-t-indigo-500 animate-spin shrink-0" />
-            <span className="text-[13px] font-medium text-gray-500">
+            <div
+              className="w-4 h-4 shrink-0"
+              style={{
+                borderRadius: "50%",
+                border: "2px solid var(--color-border-default)",
+                borderTopColor: "var(--color-lilac-dark)",
+                animation: "spin 0.8s linear infinite",
+              }}
+            />
+            <span
+              className="text-[13px] font-medium"
+              style={{ color: "var(--color-text-secondary)" }}
+            >
               {loadingPhrase}...
             </span>
           </div>
@@ -594,7 +663,26 @@ export function WidgetRenderer({ title, description, html }: WidgetRendererProps
         {ready && (
           <button
             onClick={() => setExpanded(true)}
-            className="absolute top-2 right-2 p-1.5 rounded-lg bg-white/80 border border-gray-200 text-gray-500 hover:text-gray-800 hover:bg-white shadow-sm transition-all"
+            className="absolute top-2 right-2 p-1.5"
+            style={{
+              borderRadius: "var(--radius-md)",
+              background: "var(--glass)",
+              backdropFilter: "blur(8px)",
+              WebkitBackdropFilter: "blur(8px)",
+              border: "1px solid var(--color-border-glass)",
+              color: "var(--color-text-secondary)",
+              boxShadow: "var(--shadow-sm)",
+              transition: "all 180ms ease",
+              cursor: "pointer",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.color = "var(--color-text-primary)";
+              e.currentTarget.style.boxShadow = "var(--shadow-md)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.color = "var(--color-text-secondary)";
+              e.currentTarget.style.boxShadow = "var(--shadow-sm)";
+            }}
             title="Expand to fullscreen"
           >
             <ExpandIcon />

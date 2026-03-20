@@ -31,15 +31,60 @@ export default function PredictiveStateUpdates() {
       showDevConsole={false}
       agent="predictive_state_updates"
     >
-      <div className="min-h-screen w-full">
+      <div className="brand-shell">
+        {/* Animated background blobs */}
+        <div className="blob-2" />
+        <div className="blob-3" />
+
+        <div className="glass-container">
+          {/* CTA Banner */}
+          <div className="cta-banner">
+            <div className="cta-banner-left">
+              <img
+                src="https://copilotkit.ai/favicon.ico"
+                alt=""
+                width={24}
+                height={24}
+                style={{ borderRadius: 4 }}
+              />
+              <span>Document to Diagram with CopilotKit</span>
+              <span style={{ opacity: 0.7, fontWeight: 400 }}>&mdash;</span>
+              <span style={{ opacity: 0.7, fontWeight: 400 }}>Powered by Open Generative UI</span>
+            </div>
+            <div className="cta-banner-right">
+              <a
+                href="https://docs.copilotkit.ai"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="cta-btn-secondary"
+              >
+                Read more
+              </a>
+              <a
+                href="https://github.com/GeneralJerel/document-to-diagram"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="cta-btn-primary"
+              >
+                Get started
+              </a>
+            </div>
+          </div>
+
+          {/* Editor pane */}
+          <div className="editor-pane">
+            <DocumentEditor />
+          </div>
+        </div>
+
+        {/* Sidebar renders as a fixed overlay */}
         <CopilotSidebar
           agentId="predictive_state_updates"
           defaultOpen={true}
           labels={{
-            modalHeaderTitle: "AI Document Editor",
+            modalHeaderTitle: "Document to Diagram",
           }}
         />
-        <DocumentEditor />
       </div>
     </CopilotKit>
   );
@@ -120,7 +165,14 @@ const DocumentEditor = () => {
     render: ({ name, status }) => {
       if (name === "confirm_changes" || name === "write_document" || name === "widgetRenderer") return <></>;
       return (
-        <div className="text-xs text-gray-500 px-3 py-2 rounded bg-gray-50 my-1">
+        <div
+          className="text-xs px-3 py-2 rounded-lg my-1"
+          style={{
+            color: "var(--color-text-secondary)",
+            background: "var(--surface-tertiary)",
+            border: "0.5px solid var(--color-border-light)",
+          }}
+        >
           <span className="font-medium">{name}</span>
           {status === "executing" && <span className="ml-2 animate-pulse">running...</span>}
           {status === "complete" && <span className="ml-2">done</span>}
@@ -185,7 +237,7 @@ const DocumentEditor = () => {
 
   useEffect(() => {
     if (!isMountedRef.current) return;
-    setPlaceholderVisible(text.length === 0);
+    setPlaceholderVisible(text.trim().length === 0);
 
     if (!isLoading && text !== lastPlainTextRef.current) {
       lastPlainTextRef.current = text;
@@ -230,9 +282,12 @@ const DocumentEditor = () => {
   );
 
   return (
-    <div className="relative min-h-screen w-full">
-      {placeholderVisible && (
-        <div className="absolute top-6 left-6 m-4 pointer-events-none text-gray-400">
+    <div className="relative min-h-full w-full">
+      {placeholderVisible && !isLoading && !agentState?.document && (
+        <div
+          className="absolute top-6 left-6 m-4 pointer-events-none"
+          style={{ color: "var(--color-text-tertiary)" }}
+        >
           Write whatever you want here in Markdown format...
         </div>
       )}
