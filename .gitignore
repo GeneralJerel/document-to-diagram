@@ -4,4 +4,4 @@ node_modules
 .env.local
 agent/node_modules
 agent/.env
-reference/
+reference/OpenGenerativeUI/
