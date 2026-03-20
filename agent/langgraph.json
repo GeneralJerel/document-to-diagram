@@ -1,0 +1,7 @@
+{
+  "dependencies": ["."],
+  "graphs": {
+    "predictive_state_updates": "./agent.ts:predictiveStateUpdatesGraph"
+  },
+  "env": ".env"
+}

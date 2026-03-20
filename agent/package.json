@@ -1,0 +1,17 @@
+{
+  "name": "predictive-state-updates-agent",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@langchain/core": "^1.1.7",
+    "@langchain/openai": "^1.2.0",
+    "@langchain/langgraph": "^1.0.7",
+    "uuid": "^10.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/uuid": "^10.0.0",
+    "typescript": "^5.0.0"
+  }
+}
