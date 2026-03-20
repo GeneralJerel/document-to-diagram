@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, useCallback } from "react";
+import { createPortal } from "react-dom";
 import { z } from "zod";
 
 // ─── Zod Schema (CopilotKit parameter contract) ─────────────────────
@@ -420,11 +421,100 @@ function useLoadingPhrase(active: boolean) {
   return LOADING_PHRASES[index];
 }
 
+// ─── Expand Icon SVG ────────────────────────────────────────────────
+function ExpandIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <polyline points="6 1 1 1 1 6" />
+      <polyline points="10 15 15 15 15 10" />
+      <line x1="1" y1="1" x2="6.5" y2="6.5" />
+      <line x1="15" y1="15" x2="9.5" y2="9.5" />
+    </svg>
+  );
+}
+
+function CloseIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+      <line x1="4" y1="4" x2="12" y2="12" />
+      <line x1="12" y1="4" x2="4" y2="12" />
+    </svg>
+  );
+}
+
+// ─── Modal Component ────────────────────────────────────────────────
+function WidgetModal({ title, description, html, onClose }: WidgetRendererProps & { onClose: () => void }) {
+  const iframeRef = useRef<HTMLIFrameElement>(null);
+
+  useEffect(() => {
+    if (html && iframeRef.current) {
+      iframeRef.current.srcdoc = assembleDocument(html);
+    }
+  }, [html]);
+
+  useEffect(() => {
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    document.addEventListener("keydown", handleKey);
+    return () => document.removeEventListener("keydown", handleKey);
+  }, [onClose]);
+
+  useEffect(() => {
+    const handler = (e: MessageEvent) => {
+      if (!iframeRef.current || e.source !== iframeRef.current.contentWindow) return;
+      if (e.data?.type === "open-link" && typeof e.data.url === "string") {
+        window.open(e.data.url, "_blank", "noopener,noreferrer");
+      }
+    };
+    window.addEventListener("message", handler);
+    return () => window.removeEventListener("message", handler);
+  }, []);
+
+  return createPortal(
+    <div
+      className="fixed inset-0 z-[9999] flex items-center justify-center"
+      style={{ background: "rgba(0,0,0,0.6)", backdropFilter: "blur(4px)" }}
+      onClick={onClose}
+    >
+      <div
+        className="relative bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col"
+        style={{ width: "90vw", maxWidth: 1000, height: "85vh" }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        {/* Header */}
+        <div className="flex items-center justify-between px-5 py-3 border-b border-gray-200 shrink-0">
+          <div className="min-w-0">
+            <h3 className="text-sm font-semibold text-gray-900 truncate">{title}</h3>
+            <p className="text-xs text-gray-500 truncate">{description}</p>
+          </div>
+          <button
+            onClick={onClose}
+            className="ml-3 p-1.5 rounded-lg text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors shrink-0"
+          >
+            <CloseIcon />
+          </button>
+        </div>
+        {/* Iframe */}
+        <iframe
+          ref={iframeRef}
+          sandbox="allow-scripts allow-same-origin"
+          className="w-full flex-1 border-0"
+          style={{ background: "transparent" }}
+          title={title}
+        />
+      </div>
+    </div>,
+    document.body,
+  );
+}
+
 // ─── React Component ────────────────────────────────────────────────
 export function WidgetRenderer({ title, description, html }: WidgetRendererProps) {
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const [height, setHeight] = useState(0);
   const [loaded, setLoaded] = useState(false);
+  const [expanded, setExpanded] = useState(false);
   const committedHtmlRef = useRef("");
 
   const handleMessage = useCallback((e: MessageEvent) => {
@@ -485,21 +575,40 @@ export function WidgetRenderer({ title, description, html }: WidgetRendererProps
           </div>
         </div>
       )}
-      <iframe
-        ref={iframeRef}
-        sandbox="allow-scripts allow-same-origin"
-        className="w-full border-0"
-        onLoad={() => setLoaded(true)}
-        style={{
-          height: ready ? height : 0,
-          overflow: "hidden",
-          background: "transparent",
-          opacity: ready ? 1 : 0,
-          transition: "opacity 300ms ease-in",
-          display: html ? undefined : "none",
-        }}
-        title={title}
-      />
+      <div className="relative">
+        <iframe
+          ref={iframeRef}
+          sandbox="allow-scripts allow-same-origin"
+          className="w-full border-0"
+          onLoad={() => setLoaded(true)}
+          style={{
+            height: ready ? height : 0,
+            overflow: "hidden",
+            background: "transparent",
+            opacity: ready ? 1 : 0,
+            transition: "opacity 300ms ease-in",
+            display: html ? undefined : "none",
+          }}
+          title={title}
+        />
+        {ready && (
+          <button
+            onClick={() => setExpanded(true)}
+            className="absolute top-2 right-2 p-1.5 rounded-lg bg-white/80 border border-gray-200 text-gray-500 hover:text-gray-800 hover:bg-white shadow-sm transition-all"
+            title="Expand to fullscreen"
+          >
+            <ExpandIcon />
+          </button>
+        )}
+      </div>
+      {expanded && (
+        <WidgetModal
+          title={title}
+          description={description}
+          html={html}
+          onClose={() => setExpanded(false)}
+        />
+      )}
     </div>
   );
 }
