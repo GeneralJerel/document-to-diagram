@@ -15,8 +15,10 @@ import {
   useHumanInTheLoop,
   useConfigureSuggestions,
   useDefaultRenderTool,
+  useComponent,
   CopilotSidebar,
 } from "@copilotkit/react-core/v2";
+import { WidgetRenderer, WidgetRendererProps } from "../components/widget-renderer";
 import { z } from "zod";
 import { CopilotKit } from "@copilotkit/react-core";
 
@@ -91,21 +93,32 @@ const DocumentEditor = () => {
         message: "Please write a story about a mermaid named Luna.",
       },
       { title: "Add character", message: "Please add a character named Courage." },
+      {
+        title: "Visualize the story",
+        message: "Create a visual diagram showing the characters and their relationships.",
+      },
+      {
+        title: "Story timeline",
+        message: "Create an interactive timeline of events from the document.",
+      },
     ],
     available: "always",
   });
 
   useAgentContext({
-    description: "Document writing instructions",
+    description: "Document writing and visualization instructions",
     value:
       "You are an AI document editor. Write clear, well-structured documents using markdown. " +
       "Always use the write_document_local tool to write or edit documents. " +
-      "Keep stories short and engaging.",
+      "Keep stories short and engaging. " +
+      "You can also generate interactive visualizations from the document content using the widgetRenderer tool. " +
+      "When the user asks to visualize, diagram, chart, or illustrate aspects of the document, " +
+      "use widgetRenderer to create HTML/SVG visuals that render in the chat panel.",
   });
 
   useDefaultRenderTool({
     render: ({ name, status }) => {
-      if (name === "confirm_changes" || name === "write_document") return <></>;
+      if (name === "confirm_changes" || name === "write_document" || name === "widgetRenderer") return <></>;
       return (
         <div className="text-xs text-gray-500 px-3 py-2 rounded bg-gray-50 my-1">
           <span className="font-medium">{name}</span>
@@ -114,6 +127,16 @@ const DocumentEditor = () => {
         </div>
       );
     },
+  });
+
+  useComponent({
+    name: "widgetRenderer",
+    description:
+      "Renders interactive HTML/SVG visualizations in a sandboxed iframe. " +
+      "Use this to create diagrams, charts, timelines, relationship maps, " +
+      "interactive widgets, and any visual explanation based on the document content.",
+    parameters: WidgetRendererProps,
+    render: WidgetRenderer,
   });
 
   const { agent } = useAgent({
