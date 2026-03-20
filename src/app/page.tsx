@@ -136,12 +136,9 @@ const DocumentEditor = () => {
     if (!isMountedRef.current) return;
 
     if (wasRunning.current && !isLoading) {
-      const saved = currentDocumentRef.current;
       const newDoc = agentState?.document || "";
-      if (saved.trim().length > 0 && saved !== newDoc) {
-        const diff = diffPartialText(saved, newDoc, true);
-        editor?.commands.setContent(fromMarkdown(diff));
-      }
+      // Show the final clean document (no diff highlights)
+      editor?.commands.setContent(fromMarkdown(newDoc));
       currentDocumentRef.current = newDoc;
       lastPlainTextRef.current = editor?.getText() || "";
     }
@@ -176,6 +173,7 @@ const DocumentEditor = () => {
     }
   }, [text, isLoading, isFocused, setAgentState]);
 
+  // Auto-accept confirm_changes and write_document tool calls
   useHumanInTheLoop(
     {
       agentId: "predictive_state_updates",
